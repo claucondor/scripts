@@ -1,14 +1,5 @@
 import { Timestamp } from "@google-cloud/firestore";
 
-type specialConditions = {
-  appFilter?: string;
-  erc20GatedAddress?: string;
-  onlyFollowers?: boolean;
-  poap1?: any;
-  poap2?: any;
-  poap3?: any;
-};
-
 type mirroredFrom = {
   appId: string;
   date: Timestamp;
@@ -24,10 +15,10 @@ type OldWav3s = {
   handle: string;
   minimumFollowersMirror: number;
   mirroedAndDeposited: string[];
-  mirrorFrom?: mirroredFrom[];
+  mirroredFrom?: mirroredFrom[];
   ownedBy: string;
-  specialConditions?: specialConditions;
+  specialConditions: any;
   status: string;
 };
 
-export { specialConditions, OldWav3s, mirroredFrom };
+export { OldWav3s, mirroredFrom };

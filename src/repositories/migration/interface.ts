@@ -1,3 +1,5 @@
+import { OldWav3s } from "../../entities/oldWav3s";
+
 export interface IMigrationRepository {
-  migrateWav3s(): Promise<void>;
+  getOldWav3s(collection: string): Promise<OldWav3s[]>;
 }
