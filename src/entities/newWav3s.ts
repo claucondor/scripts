@@ -1,0 +1,1 @@
+type NewWav3s = {};
