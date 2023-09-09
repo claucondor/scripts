@@ -9,6 +9,11 @@ type specialConditions = {
   poap3?: any;
 };
 
+type mirroredFrom = {
+  appId: string;
+  date: Timestamp;
+  profileId: string;
+};
 type OldWav3s = {
   publicationId: string;
   reward: number;
@@ -19,9 +24,10 @@ type OldWav3s = {
   handle: string;
   minimumFollowersMirror: number;
   mirroedAndDeposited: string[];
+  mirrorFrom?: mirroredFrom[];
   ownedBy: string;
   specialConditions?: specialConditions;
   status: string;
 };
 
-export { specialConditions, OldWav3s };
+export { specialConditions, OldWav3s, mirroredFrom };
