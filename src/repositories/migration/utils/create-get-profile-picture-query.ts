@@ -1,4 +1,4 @@
-import { GqlQueryBuilder } from '../../../../utils/gql-query-builder';
+import { GqlQueryBuilder } from "../../../utils/gql-query-builder";
 const PROFILE_ITEMS = `
 {
   name
@@ -14,13 +14,13 @@ const PROFILE_ITEMS = `
 `;
 
 function createGetProfilePictureQuery(handles: string[]): any {
-  const gqlQueryBuilder = new GqlQueryBuilder('profiles');
+  const gqlQueryBuilder = new GqlQueryBuilder("profiles");
 
   const gqlQuery = gqlQueryBuilder
     .addInitialQuery()
     .addRequest()
-    .addRequestParam('handles', handles)
-    .addRequestParam('limit', handles.length)
+    .addRequestParam("handles", handles)
+    .addRequestParam("limit", handles.length)
     .closeKey()
     .closeParenthesis()
     .addItems(PROFILE_ITEMS)
