@@ -9,6 +9,7 @@ type PaymentDto = {
   payed_by: string;
   action: string;
   distribution: string;
+  profileId: string;
 };
 
 export { PaymentDto };

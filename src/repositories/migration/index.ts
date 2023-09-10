@@ -111,27 +111,41 @@ export class MigrationRepository implements IMigrationRepository {
 
   async createPayments(env: boolean, payments: PaymentDto[]): Promise<void> {
     const PROJECT_ID = env ? "zurf-social" : "zurf-social-staging";
+    const batchSize = 10;
 
-    const query = `
-    INSERT INTO \`${PROJECT_ID}.${ZURF}.${PAYMENTS}\` (pubId, handle, wallet, date, amount, payed_by, action, distribution)
-    VALUES 
-  `;
+    const insertPaymentBatch = async (batch: PaymentDto[]) => {
+      const query = `
+        INSERT INTO \`${PROJECT_ID}.${ZURF}.${PAYMENTS}\` (pubId, handle, wallet, date, amount, payed_by, action, distribution, profileId)
+        VALUES 
+      `;
 
-    const values = payments.map(
-      (payment) =>
-        `('${payment.pubId}', '${payment.handle}', '${payment.wallet}', '${payment.date}', ${payment.amount}, '${payment.payed_by}', '${payment.action}', '${payment.distribution}')`
-    );
-    const insertQuery = query + values.join(", ");
+      const values = batch.map(
+        (payment) =>
+          `('${payment.pubId}', '${payment.handle}', '${payment.wallet}', '${payment.date}', ${payment.amount}, '${payment.payed_by}', '${payment.action}', '${payment.distribution}', '${payment.profileId}')`
+      );
+      const insertQuery = query + values.join(", ");
 
-    env
-      ? await this.prodBigqueryDb.query(insertQuery)
-      : await this.stagingBigqueryDb.query(insertQuery);
+      env
+        ? await this.prodBigqueryDb.query(insertQuery)
+        : await this.stagingBigqueryDb.query(insertQuery);
+    };
+
+    for (let i = 0; i < payments.length; i += batchSize) {
+      const remainingPayments = payments.length - i;
+      const batch = payments.slice(
+        i,
+        i + Math.min(batchSize, remainingPayments)
+      );
+      await insertPaymentBatch(batch);
+      console.log(`Inserted ${batch.length} payments`);
+    }
   }
 
   async getProfile(
     filters: GetProfileByFiltersDto
   ): Promise<Profile | undefined> {
     try {
+      console.log("aqui getProfile");
       const query = createGetProfileQuery(filters);
 
       const response: any = await this.lensApi.request(query);
@@ -142,7 +156,7 @@ export class MigrationRepository implements IMigrationRepository {
         const { items } = response.profiles;
 
         if (items.length === 0) {
-          throw new Error("No profiles found");
+          return undefined;
         }
 
         let defaultProfile = items.find(
@@ -152,11 +166,10 @@ export class MigrationRepository implements IMigrationRepository {
         if (!defaultProfile) {
           defaultProfile = items[0];
         }
-
+        console.log("construyendo profile");
         return buildExternalProfile(defaultProfile);
       }
-
-      throw new Error(`Profile not found`);
+      return undefined;
     } catch (err: any) {
       console.log(err);
       return undefined;
