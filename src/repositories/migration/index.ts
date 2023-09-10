@@ -123,4 +123,42 @@ export class MigrationRepository implements IMigrationRepository {
       ? await this.prodBigqueryDb.query(insertQuery)
       : await this.stagingBigqueryDb.query(insertQuery);
   }
+
+  async getProfile(filters: GetProfileByFiltersDto): Promise<Profile> {
+    try {
+      const query = createGetProfileQuery(filters);
+
+      const response: any = await this.lensApi.request(query);
+
+      if ("profile" in response) {
+        return buildExternalProfile(response.profile);
+      } else if ("profiles" in response && filters.address) {
+        const { items } = response.profiles;
+
+        if (items.length === 0) {
+          throw new Error("No profiles found");
+        }
+
+        let defaultProfile = items.find(
+          (profile) => profile.isDefault === true
+        );
+
+        if (!defaultProfile) {
+          defaultProfile = items[0];
+        }
+
+        return buildExternalProfile(defaultProfile);
+      }
+
+      throw new Error(`${errors.NOT_FOUND}: Profile not found`);
+    } catch (err: any) {
+      if (err.message.includes(errors.NOT_FOUND)) {
+        throw err;
+      }
+
+      const message = getMessageFromError(err);
+      logger.error(message, log);
+      throw new Error(`${errors.INTERNAL}: ${message}`);
+    }
+  }
 }
