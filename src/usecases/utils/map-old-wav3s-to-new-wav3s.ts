@@ -1,5 +1,5 @@
-import { OldWav3s } from "../../entities/oldWav3s";
-import { NewWav3 } from "../../entities/newWav3s";
+import { OldWav3s } from "../../entities/migration/oldWav3s";
+import { NewWav3 } from "../../entities/migration/newWav3s";
 
 export function mapOldWav3sToNewWav3s(oldWav3s: OldWav3s[]): NewWav3[] {
   return oldWav3s.map((oldWav3) => ({
