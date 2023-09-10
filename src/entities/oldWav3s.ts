@@ -17,7 +17,7 @@ type OldWav3s = {
   mirroedAndDeposited: string[];
   mirroredFrom?: mirroredFrom[];
   ownedBy: string;
-  specialConditions: any;
+  specialConditions?: any;
   status: string;
 };
 

@@ -1,14 +1,20 @@
 import { IMigrationRepository } from "./interface";
 import { OldWav3s } from "../../entities/oldWav3s";
+import { NewWav3 } from "../../entities/newWav3s";
 
 export class MigrationRepository implements IMigrationRepository {
   oldFirestoreDb: any;
-  ProdNewFirestoreDb: any;
-  OldNewFirestoreDb: any;
+  prodNewFirestoreDb: any;
+  stagingNewFirestoreDb: any;
 
-  constructor(oldFirestoreDb: any, ProdNewFirestoreDb: any) {
+  constructor(
+    oldFirestoreDb: any,
+    prodNewFirestoreDb: any,
+    stagingNewFirestoreDb: any
+  ) {
     this.oldFirestoreDb = oldFirestoreDb;
-    this.ProdNewFirestoreDb = ProdNewFirestoreDb;
+    this.prodNewFirestoreDb = prodNewFirestoreDb;
+    this.stagingNewFirestoreDb = stagingNewFirestoreDb;
   }
 
   async getOldWav3s(collection: string): Promise<OldWav3s[]> {
@@ -60,5 +66,26 @@ export class MigrationRepository implements IMigrationRepository {
     return oldWav3s;
   }
 
-  async createNewWav3s(env: boolean): Promise<void> {}
+  async createNewWav3s(env: boolean, wav3s: NewWav3[]): Promise<void> {
+    const collection = "wav3s";
+    let totalDocuments = 0;
+    for (const newWav3 of wav3s) {
+      console.log(newWav3);
+      let docRef;
+      if (newWav3.goalOfAction) {
+        if (env) {
+          docRef = await this.prodNewFirestoreDb.collection(collection).doc();
+        } else {
+          docRef = await this.stagingNewFirestoreDb
+            .collection(collection)
+            .doc();
+        }
+        newWav3.id = docRef.id;
+
+        await docRef.set(newWav3);
+        totalDocuments++;
+      }
+    }
+    console.log(`Total documents: ${totalDocuments}`);
+  }
 }

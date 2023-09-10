@@ -17,6 +17,8 @@ export class MigrationUseCase implements IMigrationUseCase {
         "wav3s-mainnet"
       );
       let newWav3s = mapOldWav3sToNewWav3s(oldWav3s);
+
+      await this.migrationRepository.createNewWav3s(env, newWav3s);
     }
   }
 }
