@@ -26,15 +26,16 @@ export class MigrationUseCase implements IMigrationUseCase {
     const oldWav3s = await this.migrationRepository.getOldWav3s(
       "wav3s-mainnet"
     );
-    const payments: PaymentDto[] = [];
-    const profilesMap = new Map<string, Profile>(); // Objeto Map para almacenar los perfiles
+    const profilesMap = new Map<string, Profile>();
 
     for (const oldWav3 of oldWav3s) {
+      const payments: PaymentDto[] = [];
+
       console.log(`create Payments for ${oldWav3.publicationId}`);
       const deposits = oldWav3.mirroedAndDeposited;
       if (deposits && deposits.length > 0) {
         for (const deposit of deposits) {
-          if (deposit === "0x") {
+          if (deposit === "0x" || deposit === "0x0") {
             continue;
           }
           console.log(`Address: ${deposit}`);
@@ -82,8 +83,8 @@ export class MigrationUseCase implements IMigrationUseCase {
           }
         }
       }
-    }
 
-    await this.migrationRepository.createPayments(env, payments);
+      await this.migrationRepository.createPayments(env, payments);
+    }
   }
 }

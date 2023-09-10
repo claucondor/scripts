@@ -8,6 +8,7 @@ import { Profile } from "../../entities/profile";
 import { GetProfileByFiltersDto } from "../../entities/migration/dto/get-profile-by-filters-dto";
 import { createGetProfileQuery } from "./utils/create-get-profiles-by-handle-query";
 import { buildExternalProfile } from "./utils/build-external-profile";
+import { Timestamp } from "@google-cloud/firestore";
 
 const ZURF = "zurf";
 const PAYMENTS = "payments";
@@ -113,17 +114,39 @@ export class MigrationRepository implements IMigrationRepository {
     const PROJECT_ID = env ? "zurf-social" : "zurf-social-staging";
     const batchSize = 10;
 
+    // Conjunto para rastrear las combinaciones únicas de pubId y wallet
+    const uniqueCombinations = new Set<string>();
+
     const insertPaymentBatch = async (batch: PaymentDto[]) => {
       const query = `
         INSERT INTO \`${PROJECT_ID}.${ZURF}.${PAYMENTS}\` (pubId, handle, wallet, date, amount, payed_by, action, distribution, profileId)
         VALUES 
       `;
+      const values = batch.map((payment) => {
+        const combination = `${payment.pubId}-${payment.wallet}`;
 
-      const values = batch.map(
-        (payment) =>
-          `('${payment.pubId}', '${payment.handle}', '${payment.wallet}', '${payment.date}', ${payment.amount}, '${payment.payed_by}', '${payment.action}', '${payment.distribution}', '${payment.profileId}')`
-      );
-      const insertQuery = query + values.join(", ");
+        if (uniqueCombinations.has(combination)) {
+          console.log(
+            `Payment with pubId ${payment.pubId} and wallet ${payment.wallet} already exists, skipping.`
+          );
+          return null;
+        }
+
+        uniqueCombinations.add(combination);
+
+        const date = new Date(String(payment.date));
+
+        return `('${payment.pubId}', '${payment.handle}', '${
+          payment.wallet
+        }', '${date.toISOString()}', ${payment.amount}, '${
+          payment.payed_by
+        }', '${payment.action}', '${payment.distribution}', '${
+          payment.profileId
+        }')`;
+      });
+
+      const insertQuery =
+        query + values.filter((value) => value !== null).join(", ");
 
       env
         ? await this.prodBigqueryDb.query(insertQuery)
