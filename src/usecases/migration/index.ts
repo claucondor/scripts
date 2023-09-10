@@ -3,6 +3,8 @@ import { IMigrationRepository } from "../../repositories/migration/interface";
 
 import { mapOldWav3sToNewWav3s } from "../utils";
 
+import { GetProfileByFiltersDto } from "../../entities/migration/dto/get-profile-by-filters-dto";
+
 export class MigrationUseCase implements IMigrationUseCase {
   migrationRepository: IMigrationRepository;
 
@@ -27,6 +29,12 @@ export class MigrationUseCase implements IMigrationUseCase {
       const deposits = oldWav3.mirroedAndDeposited;
       if (deposits && deposits.length > 0) {
         for (const deposit of deposits) {
+          const profileFilter: GetProfileByFiltersDto = {
+            address: deposit,
+          };
+          const profile = await this.migrationRepository.getProfile(
+            profileFilter
+          );
         }
       }
     }

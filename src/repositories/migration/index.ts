@@ -4,6 +4,10 @@ import { NewWav3 } from "../../entities/migration/newWav3s";
 import { PaymentDto } from "../../entities/migration/dto/payment-dto";
 import { BigQuery } from "@google-cloud/bigquery";
 import { GraphQLClient } from "graphql-request";
+import { Profile } from "../../entities/profile";
+import { GetProfileByFiltersDto } from "../../entities/migration/dto/get-profile-by-filters-dto";
+import { createGetProfileQuery } from "./utils/create-get-profiles-by-handle-query";
+import { buildExternalProfile } from "./utils/build-external-profile";
 
 const ZURF = "zurf";
 const PAYMENTS = "payments";
@@ -124,7 +128,9 @@ export class MigrationRepository implements IMigrationRepository {
       : await this.stagingBigqueryDb.query(insertQuery);
   }
 
-  async getProfile(filters: GetProfileByFiltersDto): Promise<Profile> {
+  async getProfile(
+    filters: GetProfileByFiltersDto
+  ): Promise<Profile | undefined> {
     try {
       const query = createGetProfileQuery(filters);
 
@@ -140,7 +146,7 @@ export class MigrationRepository implements IMigrationRepository {
         }
 
         let defaultProfile = items.find(
-          (profile) => profile.isDefault === true
+          (profile: Profile) => profile.isDefault === true
         );
 
         if (!defaultProfile) {
@@ -150,15 +156,10 @@ export class MigrationRepository implements IMigrationRepository {
         return buildExternalProfile(defaultProfile);
       }
 
-      throw new Error(`${errors.NOT_FOUND}: Profile not found`);
+      throw new Error(`Profile not found`);
     } catch (err: any) {
-      if (err.message.includes(errors.NOT_FOUND)) {
-        throw err;
-      }
-
-      const message = getMessageFromError(err);
-      logger.error(message, log);
-      throw new Error(`${errors.INTERNAL}: ${message}`);
+      console.log(err);
+      return undefined;
     }
   }
 }

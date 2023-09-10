@@ -34,7 +34,8 @@ const migrationUseCase = new MigrationUseCase(migrationRepository);
 (async () => {
   const production = false;
   try {
-    await migrationUseCase.oldWav3sToNewWav3s(production);
+    //await migrationUseCase.oldWav3sToNewWav3s(production);
+    await migrationUseCase.createPaymentsResume(false);
   } catch (error) {
     console.log(error);
   }

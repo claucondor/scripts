@@ -1,8 +1,9 @@
-import { errors } from '../consts/errors';
+import { errors } from "../consts/errors";
 
 function validateNumber(variable: any): number {
   const num = Number(variable);
-  if (isNaN(num)) throw new Error(`${errors.BAD_REQUEST}: ${variable} is not a number`);
+  if (isNaN(num))
+    throw new Error(`${errors.BAD_REQUEST}: ${variable} is not a number`);
   return num;
 }
 
@@ -12,8 +13,8 @@ function round(num: number, digits: number): string {
 }
 
 function transformIpfsToUrl(url: string): string {
-  if (url.startsWith('ipfs://')) {
-    const ipfsHash = url.replace('ipfs://', '');
+  if (url.startsWith("ipfs://")) {
+    const ipfsHash = url.replace("ipfs://", "");
     return `https://lens.infura-ipfs.io/ipfs/${ipfsHash}`;
   }
 
@@ -21,7 +22,7 @@ function transformIpfsToUrl(url: string): string {
 }
 
 function removeWhiteSpaces(text: string): string {
-  return text.replace(/\s/g, '');
+  return text.replace(/\s/g, "");
 }
 
 function capitalizeFirstLetter(text: string): string {
@@ -31,7 +32,7 @@ function capitalizeFirstLetter(text: string): string {
 }
 
 function parseToBoolean(variable: any): boolean {
-  if (String(variable) === 'true') return true;
+  if (String(variable) === "true") return true;
   return false;
 }
 
