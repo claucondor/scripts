@@ -4,6 +4,7 @@ import { MigrationUseCase } from "./src/usecases/migration";
 import { OldWav3s } from "./src/entities/migration/oldWav3s";
 import { NewWav3 } from "./src/entities/migration/newWav3s";
 import { mapOldWav3sToNewWav3s } from "./src/usecases/utils";
+import { createLensClient } from "./src/infrastructure/lens";
 
 const oldProyect = "quant-cripto-fund";
 const prodProyect = "zurf-social";
@@ -17,12 +18,15 @@ const prodFirestoreDb = connectToFirestore(prodProyect);
 const stagingBigQueryDb = connectToBigQuery(stagingProyect);
 const prodProyectBigQueryDb = connectToBigQuery(prodProyect);
 
+const lensApi = createLensClient();
+
 const migrationRepository = new MigrationRepository(
   oldFirestoreDb,
   prodFirestoreDb,
   stagingFirestoreDb,
   prodProyectBigQueryDb,
-  stagingBigQueryDb
+  stagingBigQueryDb,
+  lensApi
 );
 
 const migrationUseCase = new MigrationUseCase(migrationRepository);

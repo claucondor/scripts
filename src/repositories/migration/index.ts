@@ -3,6 +3,7 @@ import { OldWav3s } from "../../entities/migration/oldWav3s";
 import { NewWav3 } from "../../entities/migration/newWav3s";
 import { PaymentDto } from "../../entities/migration/dto/payment-dto";
 import { BigQuery } from "@google-cloud/bigquery";
+import { GraphQLClient } from "graphql-request";
 
 const ZURF = "zurf";
 const PAYMENTS = "payments";
@@ -11,21 +12,25 @@ export class MigrationRepository implements IMigrationRepository {
   prodNewFirestoreDb: any;
   stagingNewFirestoreDb: any;
 
-  prodBigqueryDb: any;
-  stagingBigqueryDb: any;
+  prodBigqueryDb: BigQuery;
+  stagingBigqueryDb: BigQuery;
+
+  lensApi: GraphQLClient;
 
   constructor(
     oldFirestoreDb: any,
     prodNewFirestoreDb: any,
     stagingNewFirestoreDb: any,
     prodBigqueryDb: BigQuery,
-    stagingBigqueryDb: BigQuery
+    stagingBigqueryDb: BigQuery,
+    lensApi: GraphQLClient
   ) {
     this.oldFirestoreDb = oldFirestoreDb;
     this.prodNewFirestoreDb = prodNewFirestoreDb;
     this.stagingNewFirestoreDb = stagingNewFirestoreDb;
     this.prodBigqueryDb = prodBigqueryDb;
     this.stagingBigqueryDb = stagingBigqueryDb;
+    this.lensApi = lensApi;
   }
 
   async getOldWav3s(collection: string): Promise<OldWav3s[]> {
