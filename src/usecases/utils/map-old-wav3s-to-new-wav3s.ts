@@ -6,7 +6,7 @@ export function mapOldWav3sToNewWav3s(oldWav3s: OldWav3s[]): NewWav3[] {
     id: "",
     externalId: oldWav3.publicationId,
     action: "mirror",
-    socialGraph: "Lens",
+    socialGraph: "lens",
     distribution: {
       type: "fcfs",
     },

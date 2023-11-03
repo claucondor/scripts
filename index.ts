@@ -11,6 +11,7 @@ const prodProyect = "zurf-social";
 const stagingProyect = "zurf-social-staging";
 
 const oldFirestoreDb = connectToFirestore(oldProyect);
+const oldBigqueryDb = connectToBigQuery(oldProyect);
 
 const stagingFirestoreDb = connectToFirestore(stagingProyect);
 const prodFirestoreDb = connectToFirestore(prodProyect);
@@ -22,6 +23,7 @@ const lensApi = createLensClient();
 
 const migrationRepository = new MigrationRepository(
   oldFirestoreDb,
+  oldBigqueryDb,
   prodFirestoreDb,
   stagingFirestoreDb,
   prodProyectBigQueryDb,
@@ -34,8 +36,10 @@ const migrationUseCase = new MigrationUseCase(migrationRepository);
 (async () => {
   const production = false;
   try {
-    //await migrationUseCase.oldWav3sToNewWav3s(production);
-    await migrationUseCase.createPaymentsResume(false);
+    await migrationUseCase.oldWav3sToNewWav3s(production);
+    //await migrationUseCase.createPaymentsResume(false);
+
+    //await migrationUseCase.paymentsZurfers(production);
   } catch (error) {
     console.log(error);
   }
