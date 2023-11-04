@@ -1,7 +1,7 @@
 import { GraphQLClient } from "graphql-request";
 import { CHALLENGE_QUERY } from "./querys";
 
-async function getChallenge(
+export async function getChallenge(
   client: GraphQLClient,
   signedBy: string,
   forProfile: string
