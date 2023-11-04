@@ -1,7 +1,7 @@
 import { GraphQLClient } from "graphql-request";
 import { AUTHENTICATE_MUTATION } from "./querys";
 
-async function authenticateWithChallenge(
+export async function authenticateWithChallenge(
   client: GraphQLClient,
   challengeId: string,
   signature: string

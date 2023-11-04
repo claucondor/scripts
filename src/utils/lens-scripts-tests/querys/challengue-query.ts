@@ -1,7 +1,8 @@
 export const CHALLENGE_QUERY = `
-  query Challenge($signedBy: String, $for: String) {
+query Challenge($signedBy: EvmAddress!, $for: ProfileId) {
     challenge(request: { signedBy: $signedBy, for: $for }) {
       text
+      id
     }
   }
 `;
