@@ -8,6 +8,7 @@ import {
   WALLET_PK,
 } from "../../infrastructure/env";
 import { PUBLICATIONS_QUERY } from "./querys/publications-query";
+import { FEED_QUERY } from "./querys/feed-query";
 
 const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 
@@ -41,6 +42,29 @@ async function authenticateUser() {
 
     client.setHeader("x-access-token", tokens.accessToken);
 
+    const response = (await client.request(FEED_QUERY, {
+      request: {
+        cursor: null,
+        where: {
+          feedEventItemTypes: ["POST"], // Tipo de evento (puedes especificar otros)
+          //metadata: {
+          //  locale: "zh-cmn-Hans-CN", // Locale opcional
+          //  contentWarning: {
+          //    oneOf: ["NSFW"] // Filtro de advertencia de contenido opcional
+          //  },
+          //  mainContentFocus: ["VIDEO"], // Enfoque de contenido principal (puedes especificar otros)
+          //  tags: {
+          //    oneOf: ["xyz789"], // Tags opcionales
+          //    all: ["xyz789"] // Otra forma de especificar tags opcionales
+          //  },
+          //  publishedOn: ["AppId"] // AppId opcional (puedes especificar otros)
+          //},
+          //for: "ProfileId", /* valor de ProfileId opcional */
+        },
+      },
+    })) as any;
+
+    console.log(JSON.stringify(response.result.items[0]));
     /* Publications
     const response = (await client.request(PUBLICATIONS_QUERY, {
       request: {
