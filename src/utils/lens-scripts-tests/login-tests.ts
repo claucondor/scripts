@@ -8,6 +8,7 @@ import {
   WALLET_PK,
 } from "../../infrastructure/env";
 import { PUBLICATIONS_QUERY } from "./querys/publications-query";
+import { PROFILES_QUERY } from "./querys/profiles-query";
 
 const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 
@@ -40,16 +41,23 @@ async function authenticateUser() {
     console.log("Refresh Token:", tokens.refreshToken);
 
     client.setHeader("x-access-token", tokens.accessToken);
-    const response = (await client.request(PUBLICATIONS_QUERY, {
+
+    
+    const response = (await client.request(PROFILES_QUERY, {
       request: {
         limit: "Ten",
         where: {
-          publicationIds: ["0xab1a-0x0260-DA-2e48212e", "0x012d4e-0x01f5"],
+          //ownedBy: ["0x0DD3aA0d06C0DDD99e0184AC31E5ca7fB4E5e342"],
+          profileIds: ["0x05"],
+          //          handles: ["lens"],
+          //          whoQuotedPublication: "PublicationId",
+          //          whoMirroredPublication: "PublicationId",
+          //          whoCommentedOn: "PublicationId"
         },
       },
     })) as any;
     (response.result.items as any[]).map((item) => {
-      console.log(item.id);
+      console.log(item.metadata);
     });
   } catch (error) {
     console.error(error);
