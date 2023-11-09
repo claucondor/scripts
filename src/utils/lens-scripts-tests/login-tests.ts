@@ -7,47 +7,50 @@ import {
   PROFILE_ID,
   WALLET_PK,
 } from "../../infrastructure/env";
-import { LensClient, production } from "@lens-protocol/client";
-import {
-  ImageSetFragment,
-  ProfileFragment,
-} from "@lens-protocol/client/dist/declarations/src";
-import { lens } from "../consts/lens";
+import { PUBLICATIONS_QUERY } from "./querys/publications-query";
 
 const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 
 const client = new GraphQLClient(GRAPHQL_API_URL);
-const lensClient = new LensClient({
-  environment: production,
-});
 
 async function authenticateUser() {
-  const signedBy = PROFILE_ADRESS as string;
-  const forProfile = PROFILE_ID as string;
+  const signedBy = PROFILE_ADRESS;
+  const forProfile = PROFILE_ID;
 
   try {
     console.log("Signed by:", signedBy);
     console.log("For profile:", forProfile);
-
-    const { id, text } = await lensClient.authentication.generateChallenge({
-      signedBy,
-      for: forProfile,
-    });
-    console.log("Challenge text:", text);
+    const challengeData = await getChallenge(
+      client,
+      signedBy as string,
+      forProfile as string
+    );
+    console.log("Challenge text:", challengeData.text);
 
     const wallet = new Wallet(WALLET_PK as string);
-    const signature = await wallet.signMessage(text);
+    const signature = await wallet.signMessage(challengeData.text);
 
-    await lensClient.authentication.authenticate({
-      id,
-      signature,
-    });
-
-    console.log(
-      "Access Token:",
-      (await lensClient.authentication.getAccessToken()).unwrap()
+    const tokens = await authenticateWithChallenge(
+      client,
+      challengeData.id,
+      signature
     );
-    console.log(await lensClient.authentication.fetch());
+
+    console.log("Access Token:", tokens.accessToken);
+    console.log("Refresh Token:", tokens.refreshToken);
+
+    client.setHeader("x-access-token", tokens.accessToken);
+    const response = (await client.request(PUBLICATIONS_QUERY, {
+      request: {
+        limit: "Ten",
+        where: {
+          publicationIds: ["0xab1a-0x0260-DA-2e48212e", "0x012d4e-0x01f5"],
+        },
+      },
+    })) as any;
+    (response.result.items as any[]).map((item) => {
+      console.log(item.id);
+    });
   } catch (error) {
     console.error(error);
   }
