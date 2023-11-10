@@ -2,7 +2,7 @@ import { PublicationId } from "./publication-stats";
 import { TriStateValue } from "./tri-state-value";
 import { OptimisticStatusResult } from "./optimistic-status-result";
 
-interface PublicationOperations {
+export interface PublicationOperations {
   id: PublicationId;
   isNotInterested: boolean;
   hasBookmarked: boolean;

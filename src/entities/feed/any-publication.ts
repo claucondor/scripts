@@ -2,8 +2,10 @@ import { App } from "./app";
 import { MomokaInfo } from "./momoka-info";
 import { Profile } from "./profile";
 import { PublicationStats } from "./publication-stats";
+import { PublicationOperations } from "./publication-operations";
 
 export interface AnyPublication {
+  __typename: string;
   id: string;
   publishedOn: App;
   isHidden: boolean;
@@ -13,10 +15,8 @@ export interface AnyPublication {
   by: Profile;
   stats: PublicationStats;
   operations: PublicationOperations;
-  metadata: PublicationMetadata;
+  metadata: any;
   isEncrypted: boolean;
-  openActionModules: OpenActionModule[];
-  referenceModule: ReferenceModule;
   profilesMentioned: ProfileMentioned[];
   hashtagsMentioned: string[];
 }
