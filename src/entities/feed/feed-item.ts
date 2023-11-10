@@ -1,5 +1,7 @@
-import { PrimaryPublication, Mirror,  } from "./any-publication";
-import { ReactionEven}
+import { PrimaryPublication, Mirror } from "./any-publication";
+import { ReactionEvent } from "./reaction-event";
+import { Comment } from "./any-publication";
+
 export interface FeedItem {
   id: string;
   root: PrimaryPublication;
