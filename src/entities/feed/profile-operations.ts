@@ -1,3 +1,6 @@
+import { OptimisticStatusResult } from "./optimistic-status-result";
+import { TriStateValue } from "./tri-state-value";
+
 export interface ProfileOperations {
     id: string;
     isBlockedByMe: OptimisticStatusResult;
