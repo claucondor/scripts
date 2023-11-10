@@ -19,8 +19,6 @@ interface Profile {
   onchainIdentity: ProfileOnchainIdentity;
   followNftAddress: NetworkAddress | null;
   metadata: ProfileMetadata | null;
-  getProfileMetadataArgs: GetProfileMetadataArgs;
-  followModule: FollowModule | null;
   handle: HandleInfo | null;
   signless: boolean;
   sponsor: boolean;
