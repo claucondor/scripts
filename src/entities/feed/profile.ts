@@ -2,6 +2,7 @@ import { NetworkAddress } from "./network-address";
 import { ProfileStats } from "./profile-stats";
 import { ProfileOperations } from "./profile-operations";
 import { ProfileGuardianResult } from "./profile-guardian-result";
+import { ProfileOnchainIdentity } from "./profile-on-chain-identity";
 
 interface Profile {
   id: string;
