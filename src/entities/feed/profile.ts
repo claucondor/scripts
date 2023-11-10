@@ -3,6 +3,7 @@ import { ProfileStats } from "./profile-stats";
 import { ProfileOperations } from "./profile-operations";
 import { ProfileGuardianResult } from "./profile-guardian-result";
 import { ProfileOnchainIdentity } from "./profile-on-chain-identity";
+import { ProfileMetadata } from "./profile-metadata";
 
 interface Profile {
   id: string;
