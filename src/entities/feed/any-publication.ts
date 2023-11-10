@@ -1,5 +1,6 @@
 import { App } from "./app";
 import { MomokaInfo } from "./momoka-info";
+import { Profile } from "./profile";
 
 export interface AnyPublication {
   id: string;
@@ -19,9 +20,7 @@ export interface AnyPublication {
   hashtagsMentioned: string[];
 }
 
-export interface Post extends AnyPublication {
-  
-}
+export interface Post extends AnyPublication {}
 
 export interface Comment extends AnyPublication {
   root: CommentablePublication;
@@ -38,4 +37,3 @@ export interface Quote extends AnyPublication {
 }
 
 export type MirrorablePublication = Post | Comment | Mirror | Quote;
-

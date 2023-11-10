@@ -4,8 +4,9 @@ import { ProfileOperations } from "./profile-operations";
 import { ProfileGuardianResult } from "./profile-guardian-result";
 import { ProfileOnchainIdentity } from "./profile-on-chain-identity";
 import { ProfileMetadata } from "./profile-metadata";
+import { HandleInfo } from "./handle-info";
 
-interface Profile {
+export interface Profile {
   id: string;
   ownedBy: NetworkAddress;
   txHash: string;
