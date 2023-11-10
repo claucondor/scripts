@@ -9,6 +9,7 @@ import {
 } from "../../infrastructure/env";
 import { PUBLICATIONS_QUERY } from "./querys/publications-query";
 import { FEED_QUERY } from "./querys/feed-query";
+import { FeedItem } from "../../entities/feed/feed-item";
 
 const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 
@@ -63,8 +64,8 @@ async function authenticateUser() {
         },
       },
     })) as any;
-
-    console.log(JSON.stringify(response.result.items[0]));
+    const itemFeed = response.result.items[0] as FeedItem;
+    console.log(itemFeed.id);
     /* Publications
     const response = (await client.request(PUBLICATIONS_QUERY, {
       request: {
