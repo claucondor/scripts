@@ -1,20 +1,21 @@
 import { NetworkAddress } from "./network-address";
+import { Image } from "./image";
 
-interface ProfilePicture {
+export interface ProfilePicture {
   raw: Image;
   optimized?: Image;
   transformed?: Image;
 }
 
 // Definición para ImageSet
-interface ImageSet {
+export interface ImageSet {
   raw: Image;
   optimized?: Image;
   transformed?: Image;
 }
 
 // Definición para NftImage
-interface NftImage {
+export interface NftImage {
   collection: NetworkAddress;
   tokenId: TokenId;
   image: ImageSet;
