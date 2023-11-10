@@ -1,7 +1,7 @@
 import { FollowModuleDto } from "./migration/dto/follow-module-dto";
 import { ProfileStatsDto } from "./migration/dto/profile-stats-dto";
 
-export type Profile = {
+export type OldProfile = {
   externalId: string;
   name?: string;
   bio?: string;
