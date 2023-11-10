@@ -3,6 +3,7 @@ import { MomokaInfo } from "./momoka-info";
 import { Profile } from "./profile";
 import { PublicationStats } from "./publication-stats";
 import { PublicationOperations } from "./publication-operations";
+import { ProfileMentioned } from "./profile-mentioned";
 
 export interface AnyPublication {
   __typename: string;
@@ -38,3 +39,5 @@ export interface Quote extends AnyPublication {
 }
 
 export type MirrorablePublication = Post | Comment | Mirror | Quote;
+export type CommentablePublication = Post | Quote;
+export type PrimaryPublication = Post | Comment | Quote;
