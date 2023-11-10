@@ -1,4 +1,5 @@
 import { NetworkAddress } from "./network-address";
+import { ProfileStats } from "./profile-stats";
 
 interface Profile {
   id: string;
@@ -6,7 +7,6 @@ interface Profile {
   txHash: string;
   createdAt: string;
   stats: ProfileStats;
-  request: ProfileStatsArg;
   operations: ProfileOperations;
   interests: string[];
   guardian: ProfileGuardianResult | null;
