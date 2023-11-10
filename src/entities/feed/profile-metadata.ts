@@ -1,3 +1,6 @@
+import { ImageSet } from "./profile-picture";
+import { ProfilePicture } from "./profile-picture";
+
 export interface ProfileMetadata {
   displayName?: string;
   bio?: Markdown;
