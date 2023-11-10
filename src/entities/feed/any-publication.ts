@@ -1,6 +1,7 @@
 import { App } from "./app";
 import { MomokaInfo } from "./momoka-info";
 import { Profile } from "./profile";
+import { PublicationStats } from "./publication-stats";
 
 export interface AnyPublication {
   id: string;
