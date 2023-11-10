@@ -1,5 +1,7 @@
 import { NetworkAddress } from "./network-address";
 import { ProfileStats } from "./profile-stats";
+import { ProfileOperations } from "./profile-operations";
+import { ProfileGuardianResult } from "./profile-guardian-result";
 
 interface Profile {
   id: string;
@@ -21,4 +23,3 @@ interface Profile {
   signless: boolean;
   sponsor: boolean;
 }
-
