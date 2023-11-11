@@ -577,6 +577,7 @@ query Feed($request: FeedRequest!) {
   }
   
   fragment VideoMetadataV3Fragment on VideoMetadataV3 {
+    __typename
     id
     rawURI
     locale
@@ -586,6 +587,11 @@ query Feed($request: FeedRequest!) {
     appId
     marketplace {
           ... MarketPlaceMetadataFragment
+    }
+    attributes{
+      type
+      key
+      value
     }
     asset{
           ... PublicationMetadataMediaVideoFragment
@@ -698,4 +704,4 @@ query Feed($request: FeedRequest!) {
       ...CommentFields
     }
   }
-`
+`;

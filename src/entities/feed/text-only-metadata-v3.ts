@@ -15,7 +15,11 @@ export interface TextOnlyMetadataV3 {
   content: string;
 }
 
-type PublicationContentWarningType = "NSFW" | "Sensitive" | "Spoiler" | null;
+export type PublicationContentWarningType =
+  | "NSFW"
+  | "Sensitive"
+  | "Spoiler"
+  | null;
 
 export interface MetadataAttribute {
   type: MetadataAttributeType;
