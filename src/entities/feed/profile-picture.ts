@@ -7,14 +7,12 @@ export interface ProfilePicture {
   transformed?: Image;
 }
 
-// Definición para ImageSet
 export interface ImageSet {
   raw: Image;
   optimized?: Image;
   transformed?: Image;
 }
 
-// Definición para NftImage
 export interface NftImage {
   collection: NetworkAddress;
   tokenId: TokenId;

@@ -607,6 +607,7 @@ query Feed($request: FeedRequest!) {
   }
   
   fragment TextOnlyMetadataV3Fragment on TextOnlyMetadataV3{
+    __typename
     id
     rawURI
     locale
@@ -626,6 +627,7 @@ query Feed($request: FeedRequest!) {
   }
   
   fragment ImageMetadataV3Fragment on ImageMetadataV3{
+    __typename
     id
     rawURI
     locale
@@ -654,6 +656,7 @@ query Feed($request: FeedRequest!) {
   }
   
   fragment AudioMetadataV3Fragment on AudioMetadataV3{
+    __typename
     id
     rawURI
     locale
