@@ -91,8 +91,8 @@ async function authenticateUser() {
     })) as any;
     const Feed = response.result as PaginatedFeed;
     Feed.items.map((item: FeedItem) => {
-      if (isComment(item.root)) {
-        console.log(item.root.commentOn);
+      if (isPost(item.root) && item.mirrors.length > 0) {
+        console.log(item.root.metadata);
       }
     });
     console.log(Feed.pageInfo.next);
