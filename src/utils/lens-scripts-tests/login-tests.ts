@@ -10,10 +10,35 @@ import {
 import { PUBLICATIONS_QUERY } from "./querys/publications-query";
 import { FEED_QUERY } from "./querys/feed-query";
 import { FeedItem } from "../../entities/feed/feed-item";
+import { PaginatedFeed } from "../../entities/feed/paginated-feed";
+import { fileExistsAsync } from "tsconfig-paths/lib/filesystem";
+import {
+  AnyPublication,
+  Mirror,
+  Post,
+  Quote,
+} from "../../entities/feed/any-publication";
+import { Comment } from "../../entities/feed/any-publication";
 
 const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 
 const client = new GraphQLClient(GRAPHQL_API_URL);
+
+function isComment(publication: AnyPublication): publication is Comment {
+  return (publication as Comment).root !== undefined;
+}
+
+function isMirror(publication: AnyPublication): publication is Mirror {
+  return (publication as Mirror).mirrorOn !== undefined;
+}
+
+function isPost(publication: AnyPublication): publication is Post {
+  return (publication as Post).__typename == "Post";
+}
+
+function isQuote(publication: AnyPublication): publication is Quote {
+  return (publication as Quote).quoteOn !== undefined;
+}
 
 async function authenticateUser() {
   const signedBy = PROFILE_ADRESS;
@@ -47,7 +72,7 @@ async function authenticateUser() {
       request: {
         cursor: null,
         where: {
-          feedEventItemTypes: ["POST"], // Tipo de evento (puedes especificar otros)
+          //feedEventItemTypes: ["POST"], // Tipo de evento (puedes especificar otros)
           //metadata: {
           //  locale: "zh-cmn-Hans-CN", // Locale opcional
           //  contentWarning: {
@@ -64,8 +89,13 @@ async function authenticateUser() {
         },
       },
     })) as any;
-    const itemFeed = response.result.items[0] as FeedItem;
-    console.log(itemFeed.id);
+    const Feed = response.result as PaginatedFeed;
+    Feed.items.map((item: FeedItem) => {
+      if (isComment(item.root)) {
+        console.log(item.root.commentOn);
+      }
+    });
+    console.log(Feed.pageInfo.next);
     /* Publications
     const response = (await client.request(PUBLICATIONS_QUERY, {
       request: {
