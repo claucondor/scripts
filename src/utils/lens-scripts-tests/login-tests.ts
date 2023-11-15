@@ -1,5 +1,5 @@
 import { GraphQLClient } from "graphql-request";
-import { Wallet, utils } from "ethers";
+import { Transaction, Wallet, utils } from "ethers";
 import { getChallenge } from "./get-challengue";
 import { authenticateWithChallenge } from "./authenticate-with-challenge";
 import {
@@ -26,6 +26,7 @@ import { WAV3S_POLYGON_CONTRACT_ADDRESS } from "../consts/contracts/addresses/wa
 import { ethers } from "ethers";
 import { contracts } from "../consts/contracts";
 import { getGasToPay, getSigner } from "../get-signer";
+import { BigNumber } from "ethers";
 
 const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 
@@ -50,6 +51,12 @@ function isQuote(publication: AnyPublication): publication is Quote {
 async function authenticateUser() {
   const signedBy = PROFILE_ADRESS;
   const forProfile = PROFILE_ID;
+
+  const lensContract = new ethers.Contract(
+    contracts.LENS_CONTRACT_ADDRESS,
+    contracts.LENS_CONTRACT_ABI,
+    getSigner(WALLET_PK as string)
+  );
 
   try {
     console.log("Signed by:", signedBy);
@@ -90,40 +97,63 @@ async function authenticateUser() {
     )) as any;
     console.log(response);
 
-    const test: CreateChangeProfileManagersBroadcastItemResult = response;
-    console.log(JSON.stringify(test));
+    const {
+      createChangeProfileManagersTypedData: test,
+    }: {
+      createChangeProfileManagersTypedData: CreateChangeProfileManagersBroadcastItemResult;
+    } = response;
+    console.log(JSON.stringify(test.typedData));
+    const domain = test.typedData.domain;
+    const types = test.typedData.types;
 
-    const lensContract = new ethers.Contract(
-      contracts.LENS_CONTRACT_ADDRESS,
-      contracts.LENS_CONTRACT_ABI,
-      getSigner(ZURF_SOCIAL_PRIVATE_KEY as string)
-    );
+    const value = test.typedData.value;
+    const signatureHex = await wallet._signTypedData(domain, types, value);
 
-    if (test.typedData.types.ChangeDelegatedExecutorsConfig) {
-      const {
+    console.log(signatureHex);
+
+    const signatureTyped = ethers.utils.splitSignature(signatureHex);
+    const v = signatureTyped.v;
+    const r = signatureTyped.r;
+    const s = signatureTyped.s;
+
+    console.log("v:", v);
+    console.log("r:", r);
+    console.log("s:", s);
+
+    const {
+      delegatorProfileId,
+      delegatedExecutors,
+      approvals,
+      configNumber,
+      switchToGivenConfig,
+      nonce,
+      deadline,
+    } = test.typedData.value;
+    const feePerGas = await getGasToPay();
+
+    const transaction =
+      await lensContract.changeDelegatedExecutorsConfigWithSig(
         delegatorProfileId,
         delegatedExecutors,
         approvals,
         configNumber,
         switchToGivenConfig,
-        nonce,
-        deadline,
-      } = test.typedData.value;
-      const delegatedExecutorsAddresses = delegatedExecutors.map(
-        (address: string) => ethers.utils.getAddress(address)
+        {
+          signer: wallet.address,
+          v,
+          r,
+          s,
+          deadline,
+        },
+        {
+          gasLimit: BigNumber.from(1000000),
+          maxFeePerGas: feePerGas.max,
+          maxPriorityFeePerGas: feePerGas.maxPriority,
+        }
       );
-      const approvalsBooleans = approvals.map(Boolean);
-      const feePerGas = await getGasToPay();
 
-      const transaction = await lensContract.changeDelegatedExecutorsConfig(
-        delegatorProfileId,
-        delegatedExecutorsAddresses,
-        approvalsBooleans,
-        configNumber,
-        switchToGivenConfig,
-        { nonce, deadline }
-      );
-    }
+    await transaction.wait();
+    console.log(transaction)
     /* Feed
     const response = (await client.request(FEED_QUERY, {
       request: {
