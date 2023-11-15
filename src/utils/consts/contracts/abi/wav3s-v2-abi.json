@@ -1,0 +1,589 @@
+[
+  {
+    "inputs": [
+      { "internalType": "address", "name": "vrfCoordinatorV2", "type": "address" },
+      { "internalType": "uint64", "name": "subscriptionId", "type": "uint64" },
+      { "internalType": "bytes32", "name": "gasLane", "type": "bytes32" },
+      { "internalType": "uint32", "name": "callbackGasLimit", "type": "uint32" },
+      { "internalType": "address", "name": "_wav3sFunctionsAddress", "type": "address" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "have", "type": "address" },
+      { "internalType": "address", "name": "want", "type": "address" }
+    ],
+    "name": "OnlyCoordinatorCanFulfill",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "uint256", "name": "requestId", "type": "uint256" }
+    ],
+    "name": "RequestedRaffleWinners",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "string", "name": "pubId", "type": "string" },
+      { "indexed": false, "internalType": "string", "name": "action", "type": "string" }
+    ],
+    "name": "wav3s__ActionFinished",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "budget", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "reward", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "actionId", "type": "uint256" }
+    ],
+    "name": "wav3s__ActionFunded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "string", "name": "pubId", "type": "string" },
+      { "indexed": false, "internalType": "string", "name": "actionName", "type": "string" }
+    ],
+    "name": "wav3s__ActionPrizeFinished",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "user", "type": "address" },
+      { "indexed": false, "internalType": "string", "name": "pubId", "type": "string" },
+      { "indexed": false, "internalType": "string", "name": "action", "type": "string" }
+    ],
+    "name": "wav3s__ActionProcessed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [{ "indexed": false, "internalType": "bool", "name": "stop", "type": "bool" }],
+    "name": "wav3s__CircuitBreak",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "consumerAppAddress",
+        "type": "address"
+      }
+    ],
+    "name": "wav3s__ConsumerAppWhitelisted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "currency", "type": "address" },
+      { "indexed": false, "internalType": "bool", "name": "isSuperCurrency", "type": "bool" }
+    ],
+    "name": "wav3s__CurrencyWhitelisted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "string", "name": "pubId", "type": "string" },
+      { "indexed": false, "internalType": "uint256", "name": "budget", "type": "uint256" },
+      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" }
+    ],
+    "name": "wav3s__EmergencyWithdraw",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "string", "name": "pubId", "type": "string" },
+      { "indexed": false, "internalType": "uint256", "name": "budget", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "budgetFinal", "type": "uint256" }
+    ],
+    "name": "wav3s__PostFundedInEmergency",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "string", "name": "pubId", "type": "string" },
+      { "indexed": false, "internalType": "string", "name": "actionName", "type": "string" },
+      { "indexed": false, "internalType": "uint256", "name": "indexOfWinners", "type": "uint256" },
+      { "indexed": false, "internalType": "address", "name": "mirrorer", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "reward", "type": "uint256" }
+    ],
+    "name": "wav3s__PrizePaid",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "protocolFee", "type": "uint256" },
+      { "indexed": false, "internalType": "uint256", "name": "baseFee", "type": "uint256" },
+      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" }
+    ],
+    "name": "wav3s__ProtocolFeeSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "uint256", "name": "budget", "type": "uint256" },
+      { "indexed": false, "internalType": "string", "name": "pubId", "type": "string" },
+      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" }
+    ],
+    "name": "wav3s__PubWithdrawn",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "user", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "rewardsWitdrawn", "type": "uint256" }
+    ],
+    "name": "wav3s__RewardsWithdrawn",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "trigger", "type": "address" },
+      { "indexed": false, "internalType": "address", "name": "sender", "type": "address" }
+    ],
+    "name": "wav3s__TriggerSet",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": false, "internalType": "address", "name": "currency", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "balance", "type": "uint256" }
+    ],
+    "name": "wav3s__backdoor",
+    "type": "event"
+  },
+  { "stateMutability": "payable", "type": "fallback" },
+  {
+    "inputs": [{ "internalType": "address", "name": "_currency", "type": "address" }],
+    "name": "backdoorCurrency",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "backdoorNative",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "baseFee",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "circuitBreaker",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "consumerAppFee_",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "pubId", "type": "string" },
+      { "internalType": "string", "name": "actionName", "type": "string" }
+    ],
+    "name": "executeRaffle",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256[]", "name": "_budget", "type": "uint256[]" },
+      { "internalType": "uint256[]", "name": "_reward", "type": "uint256[]" },
+      { "internalType": "uint256[]", "name": "_raffleDuration", "type": "uint256[]" },
+      { "internalType": "uint256[]", "name": "_variable", "type": "uint256[]" },
+      { "internalType": "address", "name": "_currency", "type": "address" },
+      { "internalType": "address", "name": "consumerApp", "type": "address" }
+    ],
+    "name": "fundAction",
+    "outputs": [{ "internalType": "uint256[10]", "name": "", "type": "uint256[10]" }],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_fundingAmount", "type": "uint256" },
+      { "internalType": "address", "name": "_currency", "type": "address" }
+    ],
+    "name": "fundWallet",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "pubId", "type": "string" },
+      { "internalType": "string", "name": "action", "type": "string" }
+    ],
+    "name": "getActionBudget",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "pubId", "type": "string" },
+      { "internalType": "string", "name": "action", "type": "string" }
+    ],
+    "name": "getActionRaffleEnd",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "pubId", "type": "string" },
+      { "internalType": "string", "name": "action", "type": "string" }
+    ],
+    "name": "getActionReward",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "pubId", "type": "string" },
+      { "internalType": "string", "name": "actionName", "type": "string" }
+    ],
+    "name": "getWinners",
+    "outputs": [{ "internalType": "address[]", "name": "", "type": "address[]" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nextActionId",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address payable", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "pubId", "type": "string" },
+      { "internalType": "string[]", "name": "action", "type": "string[]" },
+      { "internalType": "address[]", "name": "user", "type": "address[]" },
+      { "internalType": "uint256[]", "name": "variableCount", "type": "uint256[]" }
+    ],
+    "name": "processAction",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "protocolFee",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "raffleState",
+    "outputs": [
+      { "internalType": "enum RaffleStateLibrary.RaffleState", "name": "", "type": "uint8" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "requestId", "type": "uint256" },
+      { "internalType": "uint256[]", "name": "randomWords", "type": "uint256[]" }
+    ],
+    "name": "rawFulfillRandomWords",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "requestIdToPubIdActionName",
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "s_CurrencyToProtocolWallet",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "s_NativeCurrencyProtocolWallet",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "", "type": "string" },
+      { "internalType": "string", "name": "", "type": "string" }
+    ],
+    "name": "s_PubIdToActionNameToActionDataBase",
+    "outputs": [
+      { "internalType": "address", "name": "currency", "type": "address" },
+      { "internalType": "string", "name": "pubId", "type": "string" },
+      { "internalType": "string", "name": "actionName", "type": "string" },
+      { "internalType": "uint256", "name": "budget", "type": "uint256" },
+      { "internalType": "uint256", "name": "reward", "type": "uint256" },
+      { "internalType": "bool", "name": "pubIdSet", "type": "bool" },
+      { "internalType": "bool", "name": "initiatedAction", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "", "type": "string" },
+      { "internalType": "string", "name": "", "type": "string" }
+    ],
+    "name": "s_PubIdToActionNameToActionDataFilters",
+    "outputs": [
+      { "internalType": "uint256", "name": "zurfersCount", "type": "uint256" },
+      { "internalType": "uint256", "name": "raffleEnd", "type": "uint256" },
+      { "internalType": "uint256", "name": "winners", "type": "uint256" },
+      { "internalType": "uint256", "name": "withdrawalTime", "type": "uint256" },
+      { "internalType": "uint256", "name": "variable", "type": "uint256" },
+      { "internalType": "address", "name": "pubOwner", "type": "address" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "s_appAddressToAppFee",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "name": "s_appToCurrencyToWallet",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "s_currencyWhitelisted",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "s_multisig",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "", "type": "string" },
+      { "internalType": "string", "name": "", "type": "string" },
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "name": "s_pubIdToActionNameToUserHasActed",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "s_superCurrencyWhitelisted",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "s_triggerWhitelisted",
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "", "type": "address" },
+      { "internalType": "address", "name": "", "type": "address" }
+    ],
+    "name": "s_userToCurrencyToWalletBudget",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "s_userToNativeCurrencyWalletBudget",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "appFee", "type": "uint256" }],
+    "name": "setAppFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_protocolFee", "type": "uint256" },
+      { "internalType": "uint256", "name": "_baseFee", "type": "uint256" }
+    ],
+    "name": "setFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "multisig", "type": "address" }],
+    "name": "setMultisig",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "actionId", "type": "uint256" },
+      { "internalType": "string", "name": "pubId", "type": "string" },
+      { "internalType": "string", "name": "actionName", "type": "string" }
+    ],
+    "name": "setPubId",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_currency", "type": "address" }],
+    "name": "unlistCurrency",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "", "type": "string" },
+      { "internalType": "string", "name": "", "type": "string" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
+    ],
+    "name": "wav3Winner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "wav3sFunction",
+    "outputs": [{ "internalType": "contract wav3sFunctions", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_currency", "type": "address" },
+      { "internalType": "bool", "name": "isSuperCurrency", "type": "bool" }
+    ],
+    "name": "whitelistCurrency",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "wav3sTrigger", "type": "address" }],
+    "name": "whitelistWav3sTrigger",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "string", "name": "pubId", "type": "string" },
+      { "internalType": "string", "name": "actionName", "type": "string" }
+    ],
+    "name": "withdrawActionBudget",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_currency", "type": "address" }],
+    "name": "withdrawAppFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "etherAmount", "type": "uint256" },
+      { "internalType": "uint256", "name": "currencyAmount", "type": "uint256" },
+      { "internalType": "address", "name": "_currency", "type": "address" }
+    ],
+    "name": "withdrawInternalWalletBudget",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "_currency", "type": "address" }],
+    "name": "withdrawProtocolFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "withdrawProtocolNativeFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  { "stateMutability": "payable", "type": "receive" }
+]

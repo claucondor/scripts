@@ -6,6 +6,7 @@ import {
   PROFILE_ADRESS,
   PROFILE_ID,
   WALLET_PK,
+  ZURF_SOCIAL_PRIVATE_KEY,
 } from "../../infrastructure/env";
 import { PUBLICATIONS_QUERY } from "./querys/publications-query";
 import { FEED_QUERY } from "./querys/feed-query";
@@ -21,6 +22,11 @@ import {
 import { Comment } from "../../entities/feed/any-publication";
 import { CREATE_CHANGE_PROFILE_MANAGER_TYPED_DATA } from "./querys/create-change-profile-manafer-typed-data";
 import { CreateChangeProfileManagersBroadcastItemResult } from "../../entities/profile-manager/typed-data";
+import { WAV3S_POLYGON_CONTRACT_ADDRESS } from "../consts/contracts/addresses/wav3s";
+import { LENS_CONTRACT_ADDRESS } from "../consts/contracts/addresses/lens";
+import { ethers } from "ethers";
+import { contracts } from "../consts/contracts";
+import { getSigner } from "../get-signer";
 
 const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 
@@ -76,7 +82,7 @@ async function authenticateUser() {
         request: {
           changeManagers: [
             {
-              address: "0xC38f33A75b58093ba1c21C4B2763f48DaB226ff2",
+              address: WAV3S_POLYGON_CONTRACT_ADDRESS,
               action: "ADD",
             },
           ],
@@ -86,7 +92,16 @@ async function authenticateUser() {
     console.log(response);
 
     const test: CreateChangeProfileManagersBroadcastItemResult = response;
-    console.log(test)
+    console.log(test);
+
+    const lensContract = new ethers.Contract(
+      contracts.LENS_CONTRACT_ADDRESS,
+      contracts.LENS_CONTRACT_ABI,
+      getSigner(ZURF_SOCIAL_PRIVATE_KEY as string)
+    );
+
+    
+
     /* Feed
     const response = (await client.request(FEED_QUERY, {
       request: {
