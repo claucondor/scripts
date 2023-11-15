@@ -19,6 +19,8 @@ import {
   Quote,
 } from "../../entities/feed/any-publication";
 import { Comment } from "../../entities/feed/any-publication";
+import { CREATE_CHANGE_PROFILE_MANAGER_TYPED_DATA } from "./querys/create-change-profile-manafer-typed-data";
+import { CreateChangeProfileManagersBroadcastItemResult } from "../../entities/profile-manager/typed-data";
 
 const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 
@@ -68,6 +70,24 @@ async function authenticateUser() {
 
     client.setHeader("x-access-token", tokens.accessToken);
 
+    const response = (await client.request(
+      CREATE_CHANGE_PROFILE_MANAGER_TYPED_DATA,
+      {
+        request: {
+          changeManagers: [
+            {
+              address: "0xC38f33A75b58093ba1c21C4B2763f48DaB226ff2",
+              action: "ADD",
+            },
+          ],
+        },
+      }
+    )) as any;
+    console.log(response);
+
+    const test: CreateChangeProfileManagersBroadcastItemResult = response;
+    console.log(test)
+    /* Feed
     const response = (await client.request(FEED_QUERY, {
       request: {
         cursor: null,
@@ -85,7 +105,7 @@ async function authenticateUser() {
           //  },
           //  publishedOn: ["AppId"] // AppId opcional (puedes especificar otros)
           //},
-          //for: "ProfileId", /* valor de ProfileId opcional */
+          //for: "ProfileId", /* valor de ProfileId opcional 
         },
       },
     })) as any;
@@ -95,7 +115,8 @@ async function authenticateUser() {
         console.log(item.root.metadata);
       }
     });
-    console.log(Feed.pageInfo.next);
+    */
+    //console.log(Feed.pageInfo.next);
     /* Publications
     const response = (await client.request(PUBLICATIONS_QUERY, {
       request: {
