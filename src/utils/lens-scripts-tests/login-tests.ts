@@ -23,10 +23,9 @@ import { Comment } from "../../entities/feed/any-publication";
 import { CREATE_CHANGE_PROFILE_MANAGER_TYPED_DATA } from "./querys/create-change-profile-manafer-typed-data";
 import { CreateChangeProfileManagersBroadcastItemResult } from "../../entities/profile-manager/typed-data";
 import { WAV3S_POLYGON_CONTRACT_ADDRESS } from "../consts/contracts/addresses/wav3s";
-import { LENS_CONTRACT_ADDRESS } from "../consts/contracts/addresses/lens";
 import { ethers } from "ethers";
 import { contracts } from "../consts/contracts";
-import { getSigner } from "../get-signer";
+import { getGasToPay, getSigner } from "../get-signer";
 
 const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 
@@ -92,7 +91,7 @@ async function authenticateUser() {
     console.log(response);
 
     const test: CreateChangeProfileManagersBroadcastItemResult = response;
-    console.log(test);
+    console.log(JSON.stringify(test));
 
     const lensContract = new ethers.Contract(
       contracts.LENS_CONTRACT_ADDRESS,
@@ -100,8 +99,31 @@ async function authenticateUser() {
       getSigner(ZURF_SOCIAL_PRIVATE_KEY as string)
     );
 
-    
+    if (test.typedData.types.ChangeDelegatedExecutorsConfig) {
+      const {
+        delegatorProfileId,
+        delegatedExecutors,
+        approvals,
+        configNumber,
+        switchToGivenConfig,
+        nonce,
+        deadline,
+      } = test.typedData.value;
+      const delegatedExecutorsAddresses = delegatedExecutors.map(
+        (address: string) => ethers.utils.getAddress(address)
+      );
+      const approvalsBooleans = approvals.map(Boolean);
+      const feePerGas = await getGasToPay();
 
+      const transaction = await lensContract.changeDelegatedExecutorsConfig(
+        delegatorProfileId,
+        delegatedExecutorsAddresses,
+        approvalsBooleans,
+        configNumber,
+        switchToGivenConfig,
+        { nonce, deadline }
+      );
+    }
     /* Feed
     const response = (await client.request(FEED_QUERY, {
       request: {
