@@ -6,7 +6,6 @@ import {
   PROFILE_ADRESS,
   PROFILE_ID,
   WALLET_PK,
-  ZURF_SOCIAL_PRIVATE_KEY,
 } from "../../infrastructure/env";
 import { CREATE_CHANGE_PROFILE_MANAGER_TYPED_DATA } from "./querys/create-change-profile-manafer-typed-data";
 import { CreateChangeProfileManagersBroadcastItemResult } from "../../entities/profile-manager/typed-data";
@@ -19,10 +18,7 @@ const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 
 const client = new GraphQLClient(GRAPHQL_API_URL);
 
-export async function delegate() {
-  const signedBy = PROFILE_ADRESS;
-  const forProfile = PROFILE_ID;
-
+export async function delegate(accessToken: string) {
   const lensContractUser = new ethers.Contract(
     contracts.LENS_CONTRACT_ADDRESS,
     contracts.LENS_CONTRACT_ABI,
@@ -30,28 +26,9 @@ export async function delegate() {
   );
 
   try {
-    console.log("Signed by:", signedBy);
-    console.log("For profile:", forProfile);
-    const challengeData = await getChallenge(
-      client,
-      signedBy as string,
-      forProfile as string
-    );
-    console.log("Challenge text:", challengeData.text);
-
     const wallet = new Wallet(WALLET_PK as string);
-    const signature = await wallet.signMessage(challengeData.text);
 
-    const tokens = await authenticateWithChallenge(
-      client,
-      challengeData.id,
-      signature
-    );
-
-    console.log("Access Token:", tokens.accessToken);
-    console.log("Refresh Token:", tokens.refreshToken);
-
-    client.setHeader("x-access-token", tokens.accessToken);
+    client.setHeader("x-access-token", accessToken);
 
     const response = (await client.request(
       CREATE_CHANGE_PROFILE_MANAGER_TYPED_DATA,
