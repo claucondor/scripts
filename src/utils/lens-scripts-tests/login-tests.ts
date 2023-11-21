@@ -54,10 +54,16 @@ async function authenticateUser() {
   const signedBy = PROFILE_ADRESS;
   const forProfile = PROFILE_ID;
 
-  const lensContract = new ethers.Contract(
+  const lensContractUser = new ethers.Contract(
     contracts.LENS_CONTRACT_ADDRESS,
     contracts.LENS_CONTRACT_ABI,
     getSigner(WALLET_PK as string)
+  );
+
+  const lensContractZurf = new ethers.Contract(
+    contracts.LENS_CONTRACT_ADDRESS,
+    contracts.LENS_CONTRACT_ABI,
+    getSigner(ZURF_SOCIAL_PRIVATE_KEY as string)
   );
 
   try {
@@ -91,7 +97,7 @@ async function authenticateUser() {
       //},
       request: {
         contentURI:
-          "https://arweave.app/tx/0BSriHI1bhez6cJJhiDthLeHpKnRs9zMg0JV0wG-0Es",
+          "https://arweave.net/0BSriHI1bhez6cJJhiDthLeHpKnRs9zMg0JV0wG-0Es",
         /*
           openActionModules: [
             {
@@ -191,39 +197,42 @@ async function authenticateUser() {
     console.log("v:", v);
     console.log("r:", r);
     console.log("s:", s);
-    
+
     const {
-      delegatorProfileId,
-      delegatedExecutors,
-      approvals,
-      configNumber,
-      switchToGivenConfig,
-      nonce,
-      deadline,
+      profileId,
+      contentURI,
+      actionModules,
+      actionModulesInitDatas,
+      referenceModule,
+      referenceModuleInitData,
     } = test.typedData.value;
-    
+
+    const postParams = {
+      profileId,
+      contentURI,
+      actionModules,
+      actionModulesInitDatas,
+      referenceModule,
+      referenceModuleInitData,
+    };
+
     const feePerGas = await getGasToPay();
 
-    const transaction =
-      await lensContract.changeDelegatedExecutorsConfigWithSig(
-        delegatorProfileId,
-        delegatedExecutors,
-        approvals,
-        configNumber,
-        switchToGivenConfig,
-        {
-          signer: zurfWallet.address,
-          v,
-          r,
-          s,
-          deadline,
-        },
-        {
-          gasLimit: BigNumber.from(1000000),
-          maxFeePerGas: feePerGas.max,
-          maxPriorityFeePerGas: feePerGas.maxPriority,
-        }
-      );
+    const transaction = await lensContractZurf.postWithSig(
+      postParams,
+      {
+        signer: zurfWallet.address,
+        v,
+        r,
+        s,
+        deadline: test.typedData.value.deadline,
+      },
+      {
+        gasLimit: BigNumber.from(1000000),
+        maxFeePerGas: feePerGas.max,
+        maxPriorityFeePerGas: feePerGas.maxPriority,
+      }
+    );
 
     await transaction.wait();
     console.log(transaction);
