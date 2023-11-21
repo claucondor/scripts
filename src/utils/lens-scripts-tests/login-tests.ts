@@ -27,6 +27,8 @@ import { ethers } from "ethers";
 import { contracts } from "../consts/contracts";
 import { getGasToPay, getSigner } from "../get-signer";
 import { BigNumber } from "ethers";
+import { CREATE_ON_CHAIN_POST_TYPED_DATA } from "./querys/create-on-chain-post-typed-data";
+import { CreateOnchainPostBroadcastItemResult } from "../../entities/profile-manager/post-typed-data";
 
 const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 
@@ -71,6 +73,8 @@ async function authenticateUser() {
     const wallet = new Wallet(WALLET_PK as string);
     const signature = await wallet.signMessage(challengeData.text);
 
+    const zurfWallet = new Wallet(ZURF_SOCIAL_PRIVATE_KEY as string);
+
     const tokens = await authenticateWithChallenge(
       client,
       challengeData.id,
@@ -81,7 +85,62 @@ async function authenticateUser() {
     console.log("Refresh Token:", tokens.refreshToken);
 
     client.setHeader("x-access-token", tokens.accessToken);
+    const response = (await client.request(CREATE_ON_CHAIN_POST_TYPED_DATA, {
+      //options: {
+      //  overrideSigNonce: "TU_VALOR_DE_NONCE",
+      //},
+      request: {
+        contentURI:
+          "https://arweave.app/tx/0BSriHI1bhez6cJJhiDthLeHpKnRs9zMg0JV0wG-0Es",
+        /*
+          openActionModules: [
+            {
+              collectOpenAction: {
+                multirecipientCollectOpenAction: {
+                  amount: "",
+                  collectLimit: "",
+                  referralFee: VALOR,
+                  followerOnly: bool,
+                  endsAt: "fecha",
+                  recipients: [
+                    {
+                      // tal vez las address de los que van a recibir?
+                    },
+                  ],
+                },
+                simpleCollectOpenAction: {
+                  amount: "",
+                  referralFee: ??,
+                  recipient: "la fee",
+                  collectLimit: "limit de los que puedes coleccionar?",
+                  followerOnly: true,
+                  endsAt: "hasta cuando?",
+                },
+              },
+              unknownOpenAction: {
+                // otras acciones investigar?
+              },
+              },
+            },
+          ],
+          referenceModule: {
+            followerOnlyReferenceModule: false,
+            degreesOfSeparationReferenceModule: {
+              commentsRestricted: false,
+              mirrorsRestricted: true,
+              quotesRestricted: true,
+              degreesOfSeparation: 123,
+              sourceProfileId: "Id del dueño del post, no zurf",
+            },
+            unknownReferenceModule: {
+              // investigar
+            },
+          },
+          */
+      },
+    })) as any;
 
+    /*
     const response = (await client.request(
       CREATE_CHANGE_PROFILE_MANAGER_TYPED_DATA,
       {
@@ -107,7 +166,20 @@ async function authenticateUser() {
     const types = test.typedData.types;
 
     const value = test.typedData.value;
-    const signatureHex = await wallet._signTypedData(domain, types, value);
+
+    */
+    const {
+      createOnchainPostTypedData: test,
+    }: {
+      createOnchainPostTypedData: CreateOnchainPostBroadcastItemResult;
+    } = response;
+    console.log(JSON.stringify(test.typedData));
+    const domain = test.typedData.domain;
+    const types = test.typedData.types;
+
+    const value = test.typedData.value;
+
+    const signatureHex = await zurfWallet._signTypedData(domain, types, value);
 
     console.log(signatureHex);
 
@@ -119,7 +191,7 @@ async function authenticateUser() {
     console.log("v:", v);
     console.log("r:", r);
     console.log("s:", s);
-
+    
     const {
       delegatorProfileId,
       delegatedExecutors,
@@ -129,6 +201,7 @@ async function authenticateUser() {
       nonce,
       deadline,
     } = test.typedData.value;
+    
     const feePerGas = await getGasToPay();
 
     const transaction =
@@ -139,7 +212,7 @@ async function authenticateUser() {
         configNumber,
         switchToGivenConfig,
         {
-          signer: wallet.address,
+          signer: zurfWallet.address,
           v,
           r,
           s,
@@ -153,8 +226,10 @@ async function authenticateUser() {
       );
 
     await transaction.wait();
-    console.log(transaction)
-    /* Feed
+    console.log(transaction);
+
+    /*
+    // Feed
     const response = (await client.request(FEED_QUERY, {
       request: {
         cursor: null,
@@ -172,17 +247,18 @@ async function authenticateUser() {
           //  },
           //  publishedOn: ["AppId"] // AppId opcional (puedes especificar otros)
           //},
-          //for: "ProfileId", /* valor de ProfileId opcional 
+          //for: "ProfileId", /* valor de ProfileId opcional
         },
       },
     })) as any;
     const Feed = response.result as PaginatedFeed;
+    const get = JSON.stringify(Feed);
     Feed.items.map((item: FeedItem) => {
       if (isPost(item.root) && item.mirrors.length > 0) {
         console.log(item.root.metadata);
       }
     });
-    */
+
     //console.log(Feed.pageInfo.next);
     /* Publications
     const response = (await client.request(PUBLICATIONS_QUERY, {
