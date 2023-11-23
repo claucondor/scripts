@@ -14,12 +14,6 @@ const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 const client = new GraphQLClient(GRAPHQL_API_URL);
 
 export async function delegatedPost(accessToken: string, metadataTx: string) {
-  const lensContractUser = new ethers.Contract(
-    contracts.LENS_CONTRACT_ADDRESS,
-    contracts.LENS_CONTRACT_ABI,
-    getSigner(WALLET_PK as string)
-  );
-
   const lensContractZurf = new ethers.Contract(
     contracts.LENS_CONTRACT_ADDRESS,
     contracts.LENS_CONTRACT_ABI,
@@ -68,8 +62,7 @@ export async function delegatedPost(accessToken: string, metadataTx: string) {
               },
             },
           ],
-          referenceModule: {
-            followerOnlyReferenceModule: false,
+          refedrenceModule: false,
             degreesOfSeparationReferenceModule: {
               commentsRestricted: false,
               mirrorsRestricted: true,
@@ -129,21 +122,11 @@ export async function delegatedPost(accessToken: string, metadataTx: string) {
 
     const feePerGas = await getGasToPay();
 
-    const transaction = await lensContractUser.postWithSig(
-      postParams,
-      {
-        signer: zurfWallet.address,
-        v,
-        r,
-        s,
-        deadline: test.typedData.value.deadline,
-      },
-      {
-        gasLimit: BigNumber.from(1000000),
-        maxFeePerGas: feePerGas.max,
-        maxPriorityFeePerGas: feePerGas.maxPriority,
-      }
-    );
+    const transaction = await lensContractZurf.post(postParams, {
+      gasLimit: BigNumber.from(1000000),
+      maxFeePerGas: feePerGas.max,
+      maxPriorityFeePerGas: feePerGas.maxPriority,
+    });
 
     await transaction.wait();
     console.log(transaction);

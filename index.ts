@@ -39,9 +39,9 @@ const myFunction = async () => {
       },
     }
   );
-  delegatedPost(accessToken as string, response.data.data.metadataId);
+  await delegatedPost(accessToken as string, response.data.data.metadataId);
   */
-  console.log(accessToken);
+  delegate(accessToken as string);
 };
 
 myFunction();

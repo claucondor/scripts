@@ -1,12 +1,6 @@
 import { GraphQLClient } from "graphql-request";
 import { Wallet } from "ethers";
-import { getChallenge } from "./get-challengue";
-import { authenticateWithChallenge } from "./authenticate-with-challenge";
-import {
-  PROFILE_ADRESS,
-  PROFILE_ID,
-  WALLET_PK,
-} from "../../infrastructure/env";
+import { WALLET_PK, ZURF_SOCIAL_PRIVATE_KEY } from "../../infrastructure/env";
 import { CREATE_CHANGE_PROFILE_MANAGER_TYPED_DATA } from "./querys/create-change-profile-manafer-typed-data";
 import { CreateChangeProfileManagersBroadcastItemResult } from "../../entities/profile-manager/typed-data";
 import { ethers } from "ethers";
@@ -24,7 +18,11 @@ export async function delegate(accessToken: string) {
     contracts.LENS_CONTRACT_ABI,
     getSigner(WALLET_PK as string)
   );
-
+  const lensContractZurf = new ethers.Contract(
+    contracts.LENS_CONTRACT_ADDRESS,
+    contracts.LENS_CONTRACT_ABI,
+    getSigner(ZURF_SOCIAL_PRIVATE_KEY as string)
+  );
   try {
     const wallet = new Wallet(WALLET_PK as string);
 
@@ -43,6 +41,7 @@ export async function delegate(accessToken: string) {
         },
       }
     )) as any;
+
     console.log(response);
 
     const {
@@ -82,7 +81,7 @@ export async function delegate(accessToken: string) {
     const feePerGas = await getGasToPay();
 
     const transaction =
-      await lensContractUser.changeDelegatedExecutorsConfigWithSig(
+      await lensContractZurf.changeDelegatedExecutorsConfigWithSig(
         delegatorProfileId,
         delegatedExecutors,
         approvals,
