@@ -7,6 +7,8 @@ import { getGasToPay, getSigner } from "../get-signer";
 import { BigNumber } from "ethers";
 import { CREATE_ON_CHAIN_POST_TYPED_DATA } from "./querys/create-on-chain-post-typed-data";
 import { CreateOnchainPostBroadcastItemResult } from "../../entities/profile-manager/post-typed-data";
+import { CREATE_ON_CHAIN_COMMENT_TYPED_DATA } from "./querys/create-on-chain-comment-typed-data";
+import { CreateOnchainCommentBroadcastItemResult } from "../../entities/profile-manager/comment-typed-data";
 
 const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 
@@ -14,7 +16,8 @@ const client = new GraphQLClient(GRAPHQL_API_URL);
 
 export async function delegatedComment(
   accessToken: string,
-  metadataTx: string
+  metadataTx: string,
+  pubIdToComment: string
 ) {
   const lensContractZurf = new ethers.Contract(
     contracts.LENS_CONTRACT_ADDRESS,
@@ -25,12 +28,16 @@ export async function delegatedComment(
   try {
     client.setHeader("x-access-token", accessToken);
 
-    const response = (await client.request(CREATE_ON_CHAIN_POST_TYPED_DATA, {
+    const response = (await client.request(CREATE_ON_CHAIN_COMMENT_TYPED_DATA, {
       //options: {
       //  overrideSigNonce: "TU_VALOR_DE_NONCE",
       //},
       request: {
         contentURI: `https://arweave.net/${metadataTx}`,
+        commentOn: pubIdToComment,
+        // commentOnReferenceModuleData: {
+        // data
+        //   },
         /*
           openActionModules: [
             {
@@ -57,7 +64,8 @@ export async function delegatedComment(
                 },
               },
               unknownOpenAction: {
-                // otras acciones investigar?
+                 address: "0x0000000",
+                 data: "Blockchain data?"
               },
               },
             },
@@ -74,29 +82,50 @@ export async function delegatedComment(
               // investigar
             },
           },
-          */
+          referrers: [
+          {
+            publicationId: "",
+            profileId: "",
+          },
+          {
+            publicationId: "",
+            profileId: "",
+          },
+            // se agregan mas
+          ],
+    */
       },
     })) as any;
 
     const {
-      createOnchainPostTypedData: test,
+      createOnchainCommentTypedData: test,
     }: {
-      createOnchainPostTypedData: CreateOnchainPostBroadcastItemResult;
+      createOnchainCommentTypedData: CreateOnchainCommentBroadcastItemResult;
     } = response;
     console.log(JSON.stringify(test));
 
     const {
       profileId,
       contentURI,
+      pointedProfileId,
+      pointedPubId,
+      referrerProfileIds,
+      referrerPubIds,
+      referenceModuleData,
       actionModules,
       actionModulesInitDatas,
       referenceModule,
       referenceModuleInitData,
     } = test.typedData.value;
 
-    const postParams = {
+    const commentParams = {
       profileId,
       contentURI,
+      pointedProfileId,
+      pointedPubId,
+      referrerProfileIds,
+      referrerPubIds,
+      referenceModuleData,
       actionModules,
       actionModulesInitDatas,
       referenceModule,
@@ -105,7 +134,7 @@ export async function delegatedComment(
 
     const feePerGas = await getGasToPay();
 
-    const transaction = await lensContractZurf.post(postParams, {
+    const transaction = await lensContractZurf.comment(commentParams, {
       gasLimit: BigNumber.from(1000000),
       maxFeePerGas: feePerGas.max,
       maxPriorityFeePerGas: feePerGas.maxPriority,
