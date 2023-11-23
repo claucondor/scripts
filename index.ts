@@ -3,6 +3,7 @@ import { generateTokens } from "./src/utils/lens-scripts-tests/generate-tokes";
 import { delegatedPost } from "./src/utils/lens-scripts-tests/post-delegated-lens-tests";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
+import { delegatedMirror } from "./src/utils/lens-scripts-tests/mirror-delegate-lens-tests";
 
 const ZURF_API = "https://zurf-api-dot-zurf-social.uc.r.appspot.com";
 const metadata = {
@@ -41,7 +42,8 @@ const myFunction = async () => {
   );
   await delegatedPost(accessToken as string, response.data.data.metadataId);
   */
-  delegate(accessToken as string);
+  //delegate(accessToken as string);
+  await delegatedMirror(accessToken as string);
 };
 
 myFunction();

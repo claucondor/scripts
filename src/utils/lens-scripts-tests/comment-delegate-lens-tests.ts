@@ -12,7 +12,10 @@ const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 
 const client = new GraphQLClient(GRAPHQL_API_URL);
 
-export async function delegatedPost(accessToken: string, metadataTx: string) {
+export async function delegatedComment(
+  accessToken: string,
+  metadataTx: string
+) {
   const lensContractZurf = new ethers.Contract(
     contracts.LENS_CONTRACT_ADDRESS,
     contracts.LENS_CONTRACT_ABI,

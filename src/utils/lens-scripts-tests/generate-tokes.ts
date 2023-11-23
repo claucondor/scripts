@@ -18,8 +18,8 @@ const GRAPHQL_API_URL = "https://api-v2.lens.dev/";
 const client = new GraphQLClient(GRAPHQL_API_URL);
 
 export async function generateTokens(): Promise<string | undefined> {
-  //const signedBy = "0xC38f33A75b58093ba1c21C4B2763f48DaB226ff2";
-  const signedBy = PROFILE_ADRESS;
+  const signedBy = "0xC38f33A75b58093ba1c21C4B2763f48DaB226ff2";
+  //const signedBy = PROFILE_ADRESS;
   const forProfile = PROFILE_ID;
 
   try {
@@ -32,8 +32,8 @@ export async function generateTokens(): Promise<string | undefined> {
     );
     console.log("Challenge text:", challengeData.text);
 
-    //const wallet = new Wallet(ZURF_SOCIAL_PRIVATE_KEY as string);
-    const wallet = new Wallet(WALLET_PK as string);
+    const wallet = new Wallet(ZURF_SOCIAL_PRIVATE_KEY as string);
+    //const wallet = new Wallet(WALLET_PK as string);
     const signature = await wallet.signMessage(challengeData.text);
 
     const tokens = await authenticateWithChallenge(
