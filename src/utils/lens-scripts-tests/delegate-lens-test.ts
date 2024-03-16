@@ -79,7 +79,7 @@ export async function delegate(accessToken: string) {
     } = test.typedData.value;
 
     const feePerGas = await getGasToPay();
-
+    
     const transaction =
       await lensContractZurf.changeDelegatedExecutorsConfigWithSig(
         delegatorProfileId,
