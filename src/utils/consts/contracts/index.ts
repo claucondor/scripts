@@ -10,6 +10,10 @@ import LENS_CONTRACT_ABI from "./abi/lens.json";
 import { NEW_KAMALEONT_CONTRACT_ADDRESSES } from "./addresses/kamaleont";
 import KAMALEONT_NEW_ABI from "./abi/kamaleon-new-abi.json";
 
+import  NEW_ZURF_ABI  from "./abi/zurf-new-abi.json";
+import  OLD_ZURF_ABI  from "./abi/zurf-old-abi.json";
+
+
 type Contracts = {
   WAV3S_POLYGON_CONTRACT_ADDRESS: string;
   WAV3S_POLYGON_CONTRACT_ABI: any;
@@ -22,6 +26,9 @@ type Contracts = {
   // 
   NEW_KAMALEONT_CONTRACT_ADDRESSES: string;
   KAMALEONT_NEW_ABI: any;
+  //
+  NEW_ZURF_ABI: any;
+  OLD_ZURF_ABI: any;
 };
 
 const contracts: Contracts = {
@@ -36,7 +43,9 @@ const contracts: Contracts = {
   //
   NEW_KAMALEONT_CONTRACT_ADDRESSES,
   KAMALEONT_NEW_ABI,
-
+  //
+  NEW_ZURF_ABI,
+  OLD_ZURF_ABI,
 };
 
 export { contracts };

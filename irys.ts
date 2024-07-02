@@ -23,8 +23,9 @@ const checkBalance = async (irys: Irys) => {
 
 const fundIrys = async (irys: Irys) => {
     try {
-        const fundTx = await irys.fund(irys.utils.toAtomic(1));
+        const fundTx = await irys.fund(irys.utils.toAtomic(14));
         console.log(`Successfully funded ${irys.utils.fromAtomic(fundTx.quantity)} ${irys.token}`);
+        console.log(`Funding tx id: ${fundTx.id}`);
     } catch (e) {
         console.log("Error funding node ", e);
     }
@@ -73,16 +74,22 @@ const uploadFile = async (irys: Irys, fileName: string, tags: { name: string, va
 
 const run = async () => {
 
-    const fileToUpload = "./783px-Test-Logo.svg.png";
+    //const fileToUpload = "./783px-Test-Logo.svg.png";
  
-    const tags = [{ name: "Content-Type", value: "image/png" }];
+    //const tags = [{ name: "Content-Type", value: "image/png" }];
     //const txId = "0x413de45cb451ec9e34b29a735bdf924dcda08f6b7f1ee99187fc80117f84795c";
     const irys = await getIrys();
-    //checkAndPrintBalance(irys);
-    //await submitFundTransaction(irys, txId);
+    const sizeInGB = 1.2;
+    const numBytes = sizeInGB * 1024 * 1024 * 1024; // Convert size from GB to bytes
+    
+    const price = await irys.getPrice(1288490188);
+    console.log(`Price for ${sizeInGB}GB: ${irys.utils.fromAtomic(price)}`);
     //const data = 'test data for irys';
     //await uploadData(irys, data);
-    await uploadFile(irys, fileToUpload, tags);
+    //await uploadFile(irys, fileToUpload, tags);
+    //console.log("checkBalance", (await checkBalance(irys)).toString());    
+    //await fundIrys(irys);
+    console.log("checkBalance", (await checkBalance(irys)).toString()); 
 };
 
 run();
